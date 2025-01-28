@@ -1,0 +1,9 @@
+# Predictive Maintenance for IoT Devices
+
+## Objective
+Predict when IoT devices are likely to fail using sensor data, enabling proactive maintenance and reducing downtime. This project uses C# and ML.NET for binary classification.
+
+## How to Use
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Trojan3877/PredictiveMaintenance_IoT.git
