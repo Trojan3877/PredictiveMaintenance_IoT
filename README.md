@@ -15,7 +15,25 @@
 
 ## 📂 File Structure (when complete)
 
-
+PredictiveMaintenance_IoT/
+├── src/
+│ ├── DataIngest.cs # Kafka / MQTT consumer
+│ ├── FeatureEngineer.cs
+│ ├── ModelTrainer.cs # ML.NET or ONNX finetune
+│ ├── Predictor.cs # gRPC & REST API
+│ └── Program.cs # composition root
+├── tests/ # xUnit unit + integration
+├── infra/
+│ ├── helm/predmaint/ # Helm chart & values
+│ └── terraform/ # (optional) EKS + Helm
+├── docs/
+│ ├── architecture.md
+│ ├── api_reference.md
+│ └── flowchart.png # ← added next
+├── Dockerfile
+├── Makefile # build, test, docker, helm
+└── .github/workflows/
+└── ci.yml
 
 ## Overview
 
