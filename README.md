@@ -1,12 +1,21 @@
 # Predictive Maintenance IoT
 
-![MIT License](https://img.shields.io/badge/license-MIT-green.svg)
-![GitHub repo stars](https://img.shields.io/github/stars/Trojan3877/PredictiveMaintenance_IoT?style=social)
-![GitHub forks](https://img.shields.io/github/forks/Trojan3877/PredictiveMaintenance_IoT?style=social)
-![Build passing](https://img.shields.io/github/actions/workflow/status/Trojan3877/PredictiveMaintenance_IoT/ci.yml?branch=main)
-![Python version](https://img.shields.io/badge/python-3.9%2B-blue)
+# 🛠️ PredictiveMaintenance IoT
+
+![Capstone](https://img.shields.io/badge/Project-Capstone-blueviolet?style=for-the-badge)
+![Build](https://github.com/Trojan3877/PredictiveMaintenance_IoT/actions/workflows/ci.yml/badge.svg?style=for-the-badge)
+![Coverage](https://codecov.io/gh/Trojan3877/PredictiveMaintenance_IoT/branch/main/graph/badge.svg?style=for-the-badge)
+![Dependabot](https://img.shields.io/github/dependabot/updates/Trojan3877/PredictiveMaintenance_IoT?style=for-the-badge)
+![Telemetry](https://img.shields.io/badge/Telemetry-OTEL-green?style=for-the-badge)
+
+> **PredictiveMaintenance IoT** is a production-ready reference stack that ingests high-frequency sensor data, engineers features on the edge, trains a real-time fault-prediction model, and exposes REST & gRPC endpoints for alerting.  
+> Written in **C# /.NET 8**, containerized with **Docker → Helm → Kubernetes**, and instrumented via **Prometheus + OpenTelemetry**. Designed to satisfy the reliability, security, and observability requirements of Big-Tech and Big-AI FinTech environments.
 
 ---
+
+## 📂 File Structure (when complete)
+
+
 
 ## Overview
 
