@@ -1,0 +1,45 @@
+name: Build-Test-Coverage
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  dotnet-ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # ─────────── .NET 8 SDK ───────────
+      - name: 🛠️  Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: 📦 Restore
+        run: dotnet restore
+
+      - name: 🏗 Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: 🧪 Test + Coverage
+        run: |
+          dotnet test \
+            --no-build \
+            --configuration Release \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./TestResults
+
+      # ─────────── Upload coverage to Codecov ───────────
+      - name: 📈 Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: $(find TestResults -name "coverage.cobertura.xml")
+          verbose: true
