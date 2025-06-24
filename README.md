@@ -36,6 +36,7 @@ PredictiveMaintenance_IoT/
 └── ci.yml
 
 ## Overview
+![Uploading image.png…]()
 
 A full **IoT-enabled predictive maintenance pipeline** to forecast equipment failure based on sensor data streams.
 
