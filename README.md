@@ -63,6 +63,42 @@ Pipeline:
 
 ---
 
+## 🏗️ Architecture
+
+![System Flow-Chart](docs/flowchart.png)
+
+*Edge device → Kafka → Feature store → ML.NET model → K8s API → Grafana dashboard*
+
+---
+
+## 🔍 Key Metrics & KPIs
+
+| KPI | Target |
+|-----|--------|
+| **Recall (Failure)** | ≥ 0.92 |
+| **P95 Inference Latency** | < 40 ms |
+| **False Positives / day** | ≤ 2 per 1k assets |
+| **Uptime (SLA)** | 99.9 % |
+
+Metrics exposed at `/metrics` and persisted nightly to Snowflake.
+
+---
+
+## 🚀 Quick Start
+
+```bash
+# Build & test
+dotnet build && dotnet test
+
+# Local container
+docker build -t predmaint:dev .
+docker run -p 8080:8080 predmaint:dev
+
+# Helm deploy (K8s)
+helm upgrade --install predmaint infra/helm/predmaint
+
+---
+
 ## Key Results
 
 | Metric | Value |
