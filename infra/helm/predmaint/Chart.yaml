@@ -1,0 +1,16 @@
+apiVersion: v2
+name: predmaint
+description: Helm chart for PredictiveMaintenance IoT (sensor ingest → ML model → API)
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - predictive-maintenance
+  - iot
+  - ml.net
+  - kubernetes
+  - helm
+maintainers:
+  - name: Corey Leath
+    email: coreyleath10@gmail.com
+icon: https://raw.githubusercontent.com/Trojan3877/PredictiveMaintenance_IoT/main/docs/flowchart.png
