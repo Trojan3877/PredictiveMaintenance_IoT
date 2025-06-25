@@ -1,0 +1,30 @@
+# Ignore Python cache, though primary lang is C#
+__pycache__/
+*.py[cod]
+
+# .NET build output
+bin/
+obj/
+TestResults/
+
+# Logs
+*.log
+
+# Local config
+.env
+.vscode/
+.idea/
+
+# Git
+.git/
+.gitignore
+
+# Docker & helm build
+*.tar
+
+# Node modules (if UI added later)
+ui/node_modules/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
