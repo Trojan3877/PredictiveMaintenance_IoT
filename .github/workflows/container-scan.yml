@@ -1,0 +1,45 @@
+name: Container-Security-Scan
+
+on:
+  push:
+    branches: [ main ]
+    paths: ["Dockerfile", ".github/workflows/container-scan.yml"]
+  schedule:
+    - cron: "0 2 * * 1"   # Mondays 02:00 UTC
+  workflow_dispatch: {}
+
+jobs:
+  trivy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      # Build image with latest tag for scanning
+      - name: 🏗 Build Docker image
+        run: |
+          docker build -t predmaint-scan:ci .
+
+      # Trivy vulnerability scan
+      - name: 🔎 Trivy vulnerability scan
+        uses: aquasecurity/trivy-action@0.16.0
+        with:
+          image-ref: predmaint-scan:ci
+          format: table
+          exit-code: 1
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+
+      # Generate SPDX SBOM
+      - name: 📜 Generate SBOM (SPDX)
+        uses: aquasecurity/trivy-action@0.16.0
+        with:
+          image-ref: predmaint-scan:ci
+          format: spdx-json
+          output: sbom.spdx.json
+
+      - name: 📤 Upload SBOM
+        uses: actions/upload-artifact@v3
+        with:
+          name: SBOM
+          path: sbom.spdx.json
