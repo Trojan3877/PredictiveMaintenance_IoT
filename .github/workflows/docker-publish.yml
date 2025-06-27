@@ -42,3 +42,4 @@ jobs:
 
       - name: ✅ Sign image with Cosign
         run: cosign sign --yes $IMAGE_NAME:$TAG
+
