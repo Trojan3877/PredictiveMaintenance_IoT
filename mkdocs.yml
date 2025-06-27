@@ -1,0 +1,43 @@
+site_name: PredictiveMaintenance IoT Docs
+site_url: https://trojan3877.github.io/PredictiveMaintenance_IoT/
+repo_name: Trojan3877/PredictiveMaintenance_IoT
+repo_url: https://github.com/Trojan3877/PredictiveMaintenance_IoT
+edit_uri: blob/main/
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+  features:
+    - navigation.sections
+    - navigation.path
+    - content.code.copy
+    - content.tabs.link
+    - toc.follow
+
+nav:
+  - Overview: index.md
+  - Architecture: docs/architecture.md
+  - API Reference: docs/api_reference.md
+  - Metrics: docs/metrics.md
+  - OpenAPI Spec: docs/openapi.json
+  - Changelog: CHANGELOG.md
+  - Contributing: CONTRIBUTING.md
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - footnotes
+  - tables
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.highlight
+  - pymdownx.extra
+
+plugins:
+  - search
+  - mkdocs-git-revision-date-localized
+  - mike:              # optional versioned-docs
+      default_branch: gh-pages
+      default_version: latest
