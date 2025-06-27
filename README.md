@@ -8,6 +8,7 @@
 ![Dependabot](https://img.shields.io/github/dependabot/updates/Trojan3877/PredictiveMaintenance_IoT?style=for-the-badge)
 ![Telemetry](https://img.shields.io/badge/Telemetry-OTEL-green?style=for-the-badge)
 ![Container Scan](https://github.com/Trojan3877/PredictiveMaintenance_IoT/actions/workflows/container-scan.yml/badge.svg)
+![Docker Publish](https://github.com/Trojan3877/PredictiveMaintenance_IoT/actions/workflows/docker-publish.yml/badge.svg)
 
 > **PredictiveMaintenance IoT** is a production-ready reference stack that ingests high-frequency sensor data, engineers features on the edge, trains a real-time fault-prediction model, and exposes REST & gRPC endpoints for alerting.  
 > Written in **C# /.NET 8**, containerized with **Docker → Helm → Kubernetes**, and instrumented via **Prometheus + OpenTelemetry**. Designed to satisfy the reliability, security, and observability requirements of Big-Tech and Big-AI FinTech environments.
