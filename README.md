@@ -1,4 +1,4 @@
-# 🔧 Predictive Maintenance IoT — L7 Capstone ML System
+# 🔧 Predictive Maintenance IoT — Capstone ML System
 
 [![Python](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/)
 [![Build](https://github.com/Trojan3877/PredictiveMaintenance_IoT/actions/workflows/ci.yml/badge.svg)](https://github.com/Trojan3877/PredictiveMaintenance_IoT/actions/workflows/ci.yml)
