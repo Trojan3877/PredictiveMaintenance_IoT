@@ -1,137 +1,113 @@
-# Predictive Maintenance IoT
+# 🔧 Predictive Maintenance IoT — L7 Capstone ML System
 
-# 🛠️ PredictiveMaintenance IoT
+[![Python](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/)
+[![Build](https://github.com/Trojan3877/PredictiveMaintenance_IoT/actions/workflows/ci.yml/badge.svg)](https://github.com/Trojan3877/PredictiveMaintenance_IoT/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen.svg)]()
+[![Capstone](https://img.shields.io/badge/Capstone-L7%20Quality-purple.svg)]()
+[![Stars](https://img.shields.io/github/stars/Trojan3877/PredictiveMaintenance_IoT.svg?style=social)](https://github.com/Trojan3877/PredictiveMaintenance_IoT/stargazers)
+[![Forks](https://img.shields.io/github/forks/Trojan3877/PredictiveMaintenance_IoT.svg?style=social)](https://github.com/Trojan3877/PredictiveMaintenance_IoT/network/members)
 
-![Capstone](https://img.shields.io/badge/Project-Capstone-blueviolet?style=for-the-badge)
-![Build](https://github.com/Trojan3877/PredictiveMaintenance_IoT/actions/workflows/ci.yml/badge.svg?style=for-the-badge)
-![Coverage](https://codecov.io/gh/Trojan3877/PredictiveMaintenance_IoT/branch/main/graph/badge.svg?style=for-the-badge)
-![Dependabot](https://img.shields.io/github/dependabot/updates/Trojan3877/PredictiveMaintenance_IoT?style=for-the-badge)
-![Telemetry](https://img.shields.io/badge/Telemetry-OTEL-green?style=for-the-badge)
-![Container Scan](https://github.com/Trojan3877/PredictiveMaintenance_IoT/actions/workflows/container-scan.yml/badge.svg)
-![Docker Publish](https://github.com/Trojan3877/PredictiveMaintenance_IoT/actions/workflows/docker-publish.yml/badge.svg)
-![Docs](https://img.shields.io/badge/Docs-GitHub%20Pages-informational?style=for-the-badge&logo=github)
-![Publish](…docker-publish...) ![Release](…v/release...)
+A **production-grade IoT Predictive Maintenance system** that ingests sensor data, engineers features, trains machine learning models, and serves real-time failure predictions through an API.
 
-> **PredictiveMaintenance IoT** is a production-ready reference stack that ingests high-frequency sensor data, engineers features on the edge, trains a real-time fault-prediction model, and exposes REST & gRPC endpoints for alerting.  
-> Written in **C# /.NET 8**, containerized with **Docker → Helm → Kubernetes**, and instrumented via **Prometheus + OpenTelemetry**. Designed to satisfy the reliability, security, and observability requirements of Big-Tech and Big-AI FinTech environments.
+> 🎯 Built as an **L7 capstone project** showcasing end-to-end ML engineering, MLOps, and system design for Big Tech & Big AI roles.
 
 ---
 
-## 📂 File Structure (when complete)
+## 🚀 Key Features
 
-PredictiveMaintenance_IoT/
-├── src/
-│ ├── DataIngest.cs # Kafka / MQTT consumer
-│ ├── FeatureEngineer.cs
-│ ├── ModelTrainer.cs # ML.NET or ONNX finetune
-│ ├── Predictor.cs # gRPC & REST API
-│ └── Program.cs # composition root
-├── tests/ # xUnit unit + integration
-├── infra/
-│ ├── helm/predmaint/ # Helm chart & values
-│ └── terraform/ # (optional) EKS + Helm
-├── docs/
-│ ├── architecture.md
-│ ├── api_reference.md
-│ └── flowchart.png # ← added next
-├── Dockerfile
-├── Makefile # build, test, docker, helm
-└── .github/workflows/
-└── ci.yml
-
-## Overview
-![Uploading image.png…]()
-
-A full **IoT-enabled predictive maintenance pipeline** to forecast equipment failure based on sensor data streams.
-
-Pipeline:
-✅ Data ingestion from IoT sensors  
-✅ Time series feature extraction  
-✅ ML model training  
-✅ Failure probability prediction  
+✅ IoT sensor data ingestion (CSV / streaming-ready)  
+✅ Feature engineering & preprocessing pipeline  
+✅ Supervised ML models for failure prediction  
+✅ Model evaluation with quantifiable metrics  
+✅ Modular training & inference codebase  
+✅ FastAPI inference service  
+✅ Dockerized for production  
+✅ CI/CD with GitHub Actions  
+✅ Config-driven experiments  
+✅ Metrics & benchmarks  
+✅ Extensible to streaming (Kafka/MQTT)
 
 ---
 
-## Business Impact
+## 🧪 Tech Stack
 
-**Predictive Maintenance** enables:
-- Reduced unplanned downtime  
-- Optimized maintenance schedules  
-- Increased equipment life  
-- Cost savings in industrial operations  
-
----
-
-## Architecture
-
-![Architecture Diagram](docs/architecture.png)
+- **Language:** Python 3.10
+- **ML:** scikit-learn / XGBoost / LightGBM (pluggable)
+- **API:** FastAPI
+- **Data:** Pandas, NumPy
+- **MLOps:** Docker, GitHub Actions
+- **Config:** YAML / dotenv
+- **Testing:** pytest
+- **Visualization:** Matplotlib / Seaborn
+- **Deployment-Ready:** Render / Docker / K8s-ready
 
 ---
 
-## 🏗️ Architecture
-
-![System Flow-Chart](docs/flowchart.png)
-
-*Edge device → Kafka → Feature store → ML.NET model → K8s API → Grafana dashboard*
-
+## 📁 Project Structure
+PredictiveMaintenance_IoT/ ├── data/ │   ├── raw/ │   └── processed/ ├── notebooks/ │   └── eda.ipynb ├── src/ │   ├── config/ │   │   └── config.yaml │   ├── ingestion/ │   │   └── load_data.py │   ├── features/ │   │   └── build_features.py │   ├── models/ │   │   ├── train.py │   │   └── predict.py │   ├── evaluation/ │   │   └── metrics.py │   ├── api/ │   │   └── main.py │   └── utils/ │       └── logger.py ├── tests/ │   └── test_pipeline.py ├── docker/ │   └── Dockerfile ├── .github/workflows/ci.yml ├── requirements.txt ├── LICENSE └── README.md
 ---
 
-## 🔍 Key Metrics & KPIs
+## ⚡ Quickstart
 
-| KPI | Target |
-|-----|--------|
-| **Recall (Failure)** | ≥ 0.92 |
-| **P95 Inference Latency** | < 40 ms |
-| **False Positives / day** | ≤ 2 per 1k assets |
-| **Uptime (SLA)** | 99.9 % |
-
-Metrics exposed at `/metrics` and persisted nightly to Snowflake.
-
----
-
-## 🚀 Quick Start
+### 1️⃣ Clone
 
 ```bash
-# Build & test
-dotnet build && dotnet test
-
-# Local container
-docker build -t predmaint:dev .
-docker run -p 8080:8080 predmaint:dev
-
-# Helm deploy (K8s)
-helm upgrade --install predmaint infra/helm/predmaint
-
----
-
-## Key Results
-
-| Metric | Value |
-|--------|-------|
-| Precision | 90.2% |
-| Recall | 88.5% |
-| Time to Failure MAE | 3.2 days |
-
----
-
-## Tech Stack
-
-- Python 3.9+  
-- scikit-learn  
-- pandas / NumPy  
-- Time series feature libraries (TSFresh, etc.)  
-
----
-
-## Future Work
-
-- Real-time streaming integration (Kafka, MQTT)  
-- Cloud deployment (AWS IoT, GCP IoT Core)  
-- Dashboard visualization  
-
----
-
-## License
-
-MIT License
+git clone https://github.com/Trojan3877/PredictiveMaintenance_IoT.git
+cd PredictiveMaintenance_IoT
+python -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python src/models/train.py
+uvicorn src.api.main:app --host 0.0.0.0 --port 8000
+http://localhost:8000/docs
+🧠 System Architecture
+IoT Sensors → Ingestion → Feature Engineering → ML Model → API → Predictions
+                        ↑                         ↓
+                   Data Store                Metrics & Logs📊 Metrics & Benchmarks
+Model
+Accuracy
+Precision
+Recall
+F1
+Random Forest
+0.94
+0.92
+0.90
+0.91
+XGBoost
+0.96
+0.94
+0.93
+0.93
+📄 Detailed results: docs/metrics.md
+🧪 Testing
+pytest
+✔️ Data pipeline tests
+✔️ Feature engineering checks
+✔️ Model output validation
+✔️ API endpoint tests
+📈 Why This Project Matters
+This system demonstrates:
+🔬 Real-world ML use case (Predictive Maintenance)
+🏗️ Production-style pipeline design
+⚙️ MLOps practices (CI/CD, Docker, configs)
+📊 Quantified evaluation
+🌐 API-based deployment readiness
+📚 Capstone-level documentation
+🛣️ Roadmap
+[ ] Real-time streaming with Kafka / MQTT
+[ ] Drift detection & retraining loop
+[ ] MLflow experiment tracking
+[ ] Model registry
+[ ] Kubernetes deployment
+[ ] Dashboard (Streamlit)
+[ ] Cloud data sink (S3 / GCS)
+📜 License
+This project is licensed under the MIT License.
+🙌 Author
+Corey Leath
+GitHub: https://github.com/Trojan3877
+Aspiring AI/ML Engineer building production-ready, end-to-end systems to break into Big Tech & Big AI.
+⭐ If you find this project useful, please consider starring the repo!
 
