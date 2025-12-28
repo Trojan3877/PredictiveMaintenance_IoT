@@ -1,6 +1,6 @@
 # 🔧 Predictive Maintenance IoT — Capstone ML System
 [![Python](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/)
-[![Build](https://github.com/Trojan3877/PredictiveMaintenance_IoT/actions/workflows/ci.yml/badge.svg)](https://github.com/Trojan3877/PredictiveMaintenance_IoT/actions/workflows/ci.yml)
+[![Build](https://github.com/Trojan3877/PredictiveMaintenance_IoT/actions/workflows/ci.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen.svg)]()
 [![Capstone](https://img.shields.io/badge/Capstone-L7%20Quality-purple.svg)]()
