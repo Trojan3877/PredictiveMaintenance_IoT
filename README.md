@@ -1,5 +1,4 @@
 # 🔧 Predictive Maintenance IoT — Capstone ML System
-
 [![Python](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/)
 [![Build](https://github.com/Trojan3877/PredictiveMaintenance_IoT/actions/workflows/ci.yml/badge.svg)](https://github.com/Trojan3877/PredictiveMaintenance_IoT/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
@@ -11,8 +10,6 @@
 A **production-grade IoT Predictive Maintenance system** that ingests sensor data, engineers features, trains machine learning models, and serves real-time failure predictions through an API.
 
 > 🎯 Built as an **L7 capstone project** showcasing end-to-end ML engineering, MLOps, and system design for Big Tech & Big AI roles.
-
----
 
 ## 🚀 Key Features
 
@@ -28,7 +25,6 @@ A **production-grade IoT Predictive Maintenance system** that ingests sensor dat
 ✅ Metrics & benchmarks  
 ✅ Extensible to streaming (Kafka/MQTT)
 
----
 
 ## 🧪 Tech Stack
 
@@ -42,7 +38,6 @@ A **production-grade IoT Predictive Maintenance system** that ingests sensor dat
 - **Visualization:** Matplotlib / Seaborn
 - **Deployment-Ready:** Render / Docker / K8s-ready
 
----
 
 ## 📁 Project Structure
 PredictiveMaintenance_IoT/ ├── data/ │   ├── raw/ │   └── processed/ ├── notebooks/ │   └── eda.ipynb ├── src/ │   ├── config/ │   │   └── config.yaml │   ├── ingestion/ │   │   └── load_data.py │   ├── features/ │   │   └── build_features.py │   ├── models/ │   │   ├── train.py │   │   └── predict.py │   ├── evaluation/ │   │   └── metrics.py │   ├── api/ │   │   └── main.py │   └── utils/ │       └── logger.py ├── tests/ │   └── test_pipeline.py ├── docker/ │   └── Dockerfile ├── .github/workflows/ci.yml ├── requirements.txt ├── LICENSE └── README.md
@@ -103,6 +98,22 @@ This system demonstrates:
 [ ] Kubernetes deployment
 [ ] Dashboard (Streamlit)
 [ ] Cloud data sink (S3 / GCS)
+
+Design Questions & Reflections
+Q: What problem does this project aim to solve?
+A: This project seeks to explore how IoT sensor data can be used to predict mechanical failures before they occur, moving beyond simple logging into actionable insights that help prevent downtime. The focus is on building a pipeline that connects data ingestion, feature extraction, and predictive modeling in a way that mirrors real industrial applications.
+Q: Why did I choose this architecture and approach instead of a simpler solution?
+A: I chose a structured pipeline that separates data collection, preprocessing, feature engineering, and model training so each part can be reasoned about independently. This is more realistic than a simple model trial and error because industrial systems need clear, reproducible stages that can be monitored and updated separately.
+Q: What were the main trade-offs I made?
+A: The main trade-off was between fast prototyping and system clarity. I could have thrown together a prototype in one script, but that wouldn’t have given me insight into how each stage affects prediction quality. By building modular steps, I gained maintainability and clarity at the cost of more upfront development time.
+Q: What didn’t work as expected?
+A: Early versions struggled with noisy sensor readings and inconsistent sampling intervals, which degraded model performance. That taught me how important data cleaning and resampling are for IoT streams, and pushed me to add more robust preprocessing and validation checks before model training.
+Q: What did I learn from building this project?
+A: I learned that working with real-world data — especially time-series from IoT— requires careful handling of irregularities, missing values, and synchronization across sensors. I also learned how to structure an ML pipeline so the preprocessing logic supports, rather than obscures, model behavior.
+Q: If I had more time or resources, what would I improve next?
+A: I would add real-time evaluation dashboards and automated alerts so stakeholders can see performance trends and prediction confidence over time. I’d also experiment with uncertainty estimation and online learning techniques to make the system more adaptive to new patterns in the data.
+
+
 📜 License
 This project is licensed under the MIT License.
 🙌 Author
