@@ -9,9 +9,7 @@
 
 A **production-grade IoT Predictive Maintenance system** that ingests sensor data, engineers features, trains machine learning models, and serves real-time failure predictions through an API.
 
-> 🎯 Built as an **L7 capstone project** showcasing end-to-end ML engineering, MLOps, and system design for Big Tech & Big AI roles.
 
-## 🚀 Key Features
 
 ✅ IoT sensor data ingestion (CSV / streaming-ready)  
 ✅ Feature engineering & preprocessing pipeline  
