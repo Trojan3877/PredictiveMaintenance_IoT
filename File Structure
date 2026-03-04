@@ -1,0 +1,44 @@
+PredictiveMaintenance_IoT/
+│
+├── api/
+│   ├── main.py
+│   ├── schemas.py
+│   └── inference.py
+│
+├── data/
+│   ├── raw/
+│   ├── processed/
+│   └── sample_sensor_data.csv
+│
+├── models/
+│   ├── train.py
+│   ├── evaluate.py
+│   └── model.pkl
+│
+├── ingestion/
+│   ├── mqtt_simulator.py
+│   └── kafka_producer.py
+│
+├── monitoring/
+│   └── prometheus.yml
+│
+├── infra/
+│   ├── main.tf
+│   └── variables.tf
+│
+├── helm/
+│   └── predictive-maintenance/
+│
+├── tests/
+│   ├── test_api.py
+│   └── test_model.py
+│
+├── .github/workflows/
+│   ├── ci.yml
+│   ├── docker.yml
+│   ├── trivy.yml
+│
+├── Dockerfile
+├── requirements.txt
+├── README.md
+└── LICENSE
