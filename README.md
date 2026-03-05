@@ -1,19 +1,20 @@
 PredictiveMaintenance_IoT
 
 ![CI](https://github.com/Trojan3877/PredictiveMaintenance_IoT/actions/workflows/ci.yml/badge.svg)
-![Docker Publish](https://github.com/Trojan3877/PredictiveMaintenance_IoT/actions/workflows/docker.yml/badge.svg)
-![Trivy Scan](https://github.com/Trojan3877/PredictiveMaintenance_IoT/actions/workflows/trivy.yml/badge.svg)
+![Docker Build](https://github.com/Trojan3877/PredictiveMaintenance_IoT/actions/workflows/docker.yml/badge.svg)
+![Trivy Security Scan](https://github.com/Trojan3877/PredictiveMaintenance_IoT/actions/workflows/trivy.yml/badge.svg)
 ![Coverage](https://codecov.io/gh/Trojan3877/PredictiveMaintenance_IoT/branch/main/graph/badge.svg)
 ![SonarCloud](https://sonarcloud.io/api/project_badges/measure?project=Trojan3877_PredictiveMaintenance_IoT&metric=alert_status)
 ![Docker Pulls](https://img.shields.io/docker/pulls/trojan3877/predictive-maintenance)
 ![Docker Version](https://img.shields.io/docker/v/trojan3877/predictive-maintenance)
-![Helm Version](https://img.shields.io/badge/helm-v1.0.0-blue)
-![Kubernetes](https://img.shields.io/badge/kubernetes-ready-brightgreen)
-![Terraform](https://img.shields.io/badge/terraform-managed-purple)
-![Prometheus](https://img.shields.io/badge/monitoring-prometheus-orange)
+![Streamlit](https://img.shields.io/badge/Streamlit-Deployed-FF4B4B?logo=streamlit&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?logo=fastapi&logoColor=white)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-326CE5?logo=kubernetes&logoColor=white)
+![Terraform](https://img.shields.io/badge/Terraform-IaC-623CE4?logo=terraform&logoColor=white)
+![Prometheus](https://img.shields.io/badge/Monitoring-Prometheus-E6522C?logo=prometheus&logoColor=white)
 ![License](https://img.shields.io/github/license/Trojan3877/PredictiveMaintenance_IoT)
 ![Last Commit](https://img.shields.io/github/last-commit/Trojan3877/PredictiveMaintenance_IoT)
-![Repo Size](https://img.shields.io/github/repo-size/Trojan3877/PredictiveMaintenance_IoT)
+
 
 
 PredictiveMaintenance_IoT is a cloud-native, production-oriented predictive maintenance platform designed to simulate real-world IoT industrial monitoring systems.
@@ -35,40 +36,18 @@ Core Capabilities
 
 Architecture
 System Architecture Flow
-        ┌──────────────────────┐
-        │  IoT Sensor Devices  │
-        │  (Temp, Vib, Press)  │
-        └─────────┬────────────┘
-                  │
-                  ▼
-        ┌──────────────────────┐
-        │  Ingestion Layer     │
-        │  MQTT / Kafka Sim    │
-        └─────────┬────────────┘
-                  │
-                  ▼
-        ┌──────────────────────┐
-        │ Data Processing      │
-        │ Feature Engineering  │
-        └─────────┬────────────┘
-                  │
-                  ▼
-        ┌──────────────────────┐
-        │ ML Model (RandomForest)
-        │ Stored in models/    │
-        └─────────┬────────────┘
-                  │
-                  ▼
-        ┌──────────────────────┐
-        │ FastAPI Inference    │
-        │ REST Endpoint        │
-        └─────────┬────────────┘
-                  │
-                  ▼
-        ┌──────────────────────┐
-        │ Monitoring Layer     │
-        │ Prometheus Metrics   │
-        └──────────────────────┘
+
+IoT Sensors
+    ↓
+Ingestion Layer
+    ↓
+ML Model (RandomForest)
+    ↓
+FastAPI Inference Service
+    ↓
+Streamlit Dashboard (User Interface)
+    ↓
+Prometheus Monitoring
 
         Performance Metrics
 Metric	Value
