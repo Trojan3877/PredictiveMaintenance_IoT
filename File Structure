@@ -38,7 +38,15 @@ PredictiveMaintenance_IoT/
 │   ├── docker.yml
 │   ├── trivy.yml
 │
+PredictiveMaintenance_IoT/
+│
+├── dashboard/
+│   └── streamlit_app.py
+│
+├── api/
+│   └── main.py
+├── models/
+├── tests/
 ├── Dockerfile
-├── requirements.txt
-├── README.md
-└── LICENSE
+├── docker-compose.yml
+└── requirements.txt
