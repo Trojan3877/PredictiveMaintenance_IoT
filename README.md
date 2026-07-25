@@ -31,7 +31,7 @@ flowchart LR
 
 ### Quickstart and local validation
 
-The supported local path should be reproducible from a clean checkout. The inferred stack for this repository is **C++**.
+The supported local path should be reproducible from a clean checkout. The inferred stack for this repository is **Python with a FastAPI edge gateway and optional C++/llama.cpp bindings**.
 
 ```bash
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build
@@ -62,6 +62,42 @@ The intended use, excluded use, data/credential handling, model or algorithm lim
 
 **What should be completed next?**  
 Use the linked production-readiness issue for this repository as the checklist. Resolve missing tests, deployment instructions, observability, supply-chain controls, and release evidence before attaching a production claim.
+
+
+## Senior review follow-up: reproducibility and operating trade-offs
+
+This section closes the documentation items tracked in [issue #6](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/issues/6). The values below are the repository's existing simulated-edge benchmark results; they are engineering evidence, not a field safety certification.
+
+### Verified evidence and clean-clone path
+
+| Evidence | Current source of truth | Interpretation |
+|---|---|---|
+| Gateway throughput and p50/p99 latency | Empirical Performance Metrics above | Synthetic telemetry workload on the stated 4-core/8-GB environment |
+| Failure-detection F1 | Empirical Performance Metrics above | Synthetic failure dataset; requires a versioned, representative plant dataset before deployment |
+| Diagnostic TTFT, generation speed, and memory | Phi-3 Diagnostic Agent table above | CPU-bound quantized inference; not a machine-control deadline |
+| Static quality and tests | `ruff check .`, `pytest tests/`, and `pytest tests/performance/` | Must be rerun from the commit under review |
+| Runtime validation | `uvicorn src.api.main:app` plus the documented health/API checks | Requires the model artifact and local environment described in Quick Start |
+
+From a clean checkout, run:
+
+```bash
+python -m venv .venv
+# Linux/macOS: source .venv/bin/activate
+# Windows: .venv\Scripts\activate
+python -m pip install -r requirements.txt
+ruff check .
+pytest tests/
+pytest tests/performance/
+```
+
+The README should only promote a new benchmark after the command, commit SHA, hardware, workload, warm-up policy, and raw result artifact are recorded together. Container size, image digest, secret/dependency scan output, and coverage percentage remain release evidence to capture in CI rather than inferred from badges.
+
+### Engineering decisions and trade-offs
+
+- **Local quantized inference vs. cloud reasoning:** keeping Phi-3 on the edge avoids a cloud round trip and supports disconnected sites, but consumes roughly 2.5 GB and makes model distribution and hardware compatibility operational concerns.
+- **Fail-safe alerting vs. alert volume:** a conservative critical threshold protects recall for dangerous anomalies, while noisy sensors can increase false alarms; production rollout needs threshold calibration and technician-confirmed outcomes.
+- **Asynchronous diagnostics vs. control-loop latency:** the lightweight detector owns the fast path; the LLM is advisory and must never be the sole actuator for a safety decision.
+- **Next production step:** re-run the benchmark with a versioned representative dataset and signed model artifact, then add a hardware-in-the-loop failure-mode test before treating the reported latency or F1 as deployment evidence.
 
 
 ## System Architecture & Multi-Agent Flow
