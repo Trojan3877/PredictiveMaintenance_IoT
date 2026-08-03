@@ -3,9 +3,16 @@
 import time
 import pytest
 from fastapi.testclient import TestClient
-from src.api.main import app
+from src.api import main as api_main
 
-client = TestClient(app)
+client = TestClient(api_main.app)
+
+
+@pytest.fixture(autouse=True)
+def enable_mock_diagnostics(monkeypatch):
+    """Benchmark the explicit CI diagnostic mode, never an implicit production fallback."""
+    monkeypatch.setattr(api_main, "llm", None)
+    monkeypatch.setattr(api_main, "ALLOW_MOCK_DIAGNOSTICS", True)
 
 @pytest.fixture
 def critical_sensor_payload():
