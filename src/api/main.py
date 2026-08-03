@@ -2,7 +2,7 @@
 
 import os
 from typing import Any, Dict, Optional, cast
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 # Import the newly created deterministic Safety Agent
@@ -12,6 +12,9 @@ app = FastAPI(title="Predictive Maintenance & Diagnostic API")
 
 # Define the expected path for the quantized Phi-3 model
 MODEL_PATH = "./models/phi-3-mini-4k-instruct-q4.gguf"
+
+# Mock diagnostic output is permitted only when explicitly enabled for local or CI testing.
+ALLOW_MOCK_DIAGNOSTICS = os.getenv("ALLOW_MOCK_DIAGNOSTICS", "").lower() in {"1", "true", "yes"}
 
 # Explicitly type hint the LLM variable to allow None in CI environments
 llm: Optional[Any] = None
@@ -36,8 +39,17 @@ class SensorData(BaseModel):
 
 @app.get("/health")
 def health_check() -> Dict[str, str]:
-    """Tier 6 container health validation endpoint."""
-    return {"status": "healthy"}
+    """Report process health and the currently configured diagnostic mode."""
+    diagnostic_mode = "model" if llm is not None else ("mock" if ALLOW_MOCK_DIAGNOSTICS else "unavailable")
+    return {"status": "healthy", "diagnostic_mode": diagnostic_mode}
+
+
+@app.get("/ready")
+def readiness_check() -> Dict[str, str]:
+    """Fail readiness when no diagnostic model is available outside explicit test mode."""
+    if llm is None and not ALLOW_MOCK_DIAGNOSTICS:
+        raise HTTPException(status_code=503, detail="Diagnostic model is unavailable")
+    return {"status": "ready"}
 
 @app.post("/diagnose")
 def generate_mitigation_strategy(data: SensorData) -> Dict[str, Any]:
@@ -54,8 +66,10 @@ def generate_mitigation_strategy(data: SensorData) -> Dict[str, Any]:
             "mitigation": "None required."
         }
 
-    # CI/CD Test Mode Fallback
+    # Mock mitigation is a test-only behavior. Production callers must never receive it silently.
     if llm is None:
+        if not ALLOW_MOCK_DIAGNOSTICS:
+            raise HTTPException(status_code=503, detail="Diagnostic model is unavailable")
         return {
             "sensor_id": data.sensor_id,
             "mitigation_plan": "1. [CI/TEST MODE] Initiate mock shutdown.\n2. [CI/TEST MODE] Perform mock inspection."
