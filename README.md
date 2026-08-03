@@ -100,6 +100,10 @@ The README should only promote a new benchmark after the command, commit SHA, ha
 - **Next production step:** re-run the benchmark with a versioned representative dataset and signed model artifact, then add a hardware-in-the-loop failure-mode test before treating the reported latency or F1 as deployment evidence.
 
 
+## Diagnostic safety boundary
+
+The diagnostic service fails closed when the Phi-3 model artifact is unavailable: anomalous telemetry receives HTTP 503 and `GET /ready` is unready. The historical mock mitigation is available only when `ALLOW_MOCK_DIAGNOSTICS=true` is deliberately set for local development or CI. Do not enable that switch in a production deployment; mock text is not safety guidance.
+
 ## System Architecture & Multi-Agent Flow
 
 The system operates on a dual-agent topology. A lightweight anomaly detection model serves as the primary gateway, processing continuous sensor streams. The LLM diagnostic agent is highly constrained and computationally isolated, executing only when a critical failure threshold is breached.
