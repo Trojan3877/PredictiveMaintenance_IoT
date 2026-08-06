@@ -1,0 +1,119 @@
+{
+  "name": "PredictiveMaintenance_IoT: pull request assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "owner": "CoreyLeath-code",
+        "repository": "PredictiveMaintenance_IoT",
+        "events": [
+          "pull_request"
+        ]
+      },
+      "id": "7697238c-6cd5-4504-b814-d15c923be4fd",
+      "name": "GitHub pull request trigger",
+      "type": "n8n-nodes-base.githubTrigger",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        0
+      ],
+      "webhookId": "42bb71c9-2d8b-43f8-a1b9-20b81128af19"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.github.com/repos/CoreyLeath-code/PredictiveMaintenance_IoT/pulls/{{$json.body.pull_request.number}}/files",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "options": {}
+      },
+      "id": "e7c53d4b-8ca9-4439-a9b3-897fd011c5bd",
+      "name": "List changed files",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -40,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const trigger = $node[\"GitHub pull request trigger\"].json.body ?? $node[\"GitHub pull request trigger\"].json;\nif (!['opened', 'ready_for_review'].includes(trigger.action) || !trigger.pull_request) {\n  return [];\n}\nconst files = $input.all().map((item) => item.json.filename).filter(Boolean);\nconst modules = [...new Set(files.map((path) => path.split('/').slice(0, -1).join('/') || '(repository root)'))];\nconst issueReference = /(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\\s+#\\d+/i.test(trigger.pull_request.body || '');\nconst checklist = [\n  '## Automation review checklist',\n  '',\n  '**Summary:** ' + trigger.pull_request.title,\n  '**Affected modules:** ' + (modules.length ? modules.map((module) => '`' + module + '`').join(', ') : 'No changed-file metadata returned.'),\n  '',\n  '- [ ] Tests cover the changed behavior or explain why they are not applicable.',\n  '- [ ] README, API, model, benchmark, or deployment documentation is updated when the change changes those contracts.',\n  '- [' + (issueReference ? 'x' : ' ') + '] Linked issue reference present.',\n  '',\n  'This comment is a reviewer reminder. It does not approve, merge, or alter the pull request.'\n].join('\\n');\nreturn [{ json: { pr_number: trigger.pull_request.number, body: checklist } }];"
+      },
+      "id": "af0e71e2-f21a-4f05-9f55-284c7f2c7176",
+      "name": "Create reviewer checklist",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.github.com/repos/CoreyLeath-code/PredictiveMaintenance_IoT/issues/{{$json.pr_number}}/comments",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ body: $json.body }) }}",
+        "options": {}
+      },
+      "id": "c18183d6-28b8-4ac3-a0a9-d22df38f4028",
+      "name": "Post reviewer checklist",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "GitHub pull request trigger": {
+      "main": [
+        [
+          {
+            "node": "List changed files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List changed files": {
+      "main": [
+        [
+          {
+            "node": "Create reviewer checklist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create reviewer checklist": {
+      "main": [
+        [
+          {
+            "node": "Post reviewer checklist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f91ea429-26cc-4eb2-a413-689b927520b8",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}
