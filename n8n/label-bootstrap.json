@@ -1,0 +1,112 @@
+{
+  "name": "PredictiveMaintenance_IoT: label bootstrap",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "f7e4b7ee-6ba1-4a4b-b3cc-bc9cddf2e7a1",
+      "name": "Manual label bootstrap",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.github.com/repos/CoreyLeath-code/PredictiveMaintenance_IoT/labels?per_page=100",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "options": {}
+      },
+      "id": "9c87910b-5fad-438a-8b0b-98a09747ea35",
+      "name": "List existing labels",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -320,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const desired = [{\"name\":\"bug\",\"color\":\"d73a4a\"},{\"name\":\"feature\",\"color\":\"a2eeef\"},{\"name\":\"documentation\",\"color\":\"0075ca\"},{\"name\":\"enhancement\",\"color\":\"a2eeef\"},{\"name\":\"question\",\"color\":\"d876e3\"},{\"name\":\"needs-triage\",\"color\":\"ededed\"},{\"name\":\"priority:high\",\"color\":\"b60205\"},{\"name\":\"priority:medium\",\"color\":\"fbca04\"},{\"name\":\"priority:low\",\"color\":\"0e8a16\"},{\"name\":\"good first issue\",\"color\":\"7057ff\"},{\"name\":\"help wanted\",\"color\":\"008672\"}];\nconst existing = new Set($input.all().map((item) => String(item.json.name || '').toLowerCase()));\nreturn desired\n  .filter((label) => !existing.has(label.name.toLowerCase()))\n  .map((label) => ({ json: label }));"
+      },
+      "id": "1cf5844c-6cfe-4e55-80a5-6d5d195e4b45",
+      "name": "Select missing labels",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.github.com/repos/CoreyLeath-code/PredictiveMaintenance_IoT/labels",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ name: $json.name, color: $json.color }) }}",
+        "options": {}
+      },
+      "id": "2e149e08-729d-4b32-afc4-a0b70a905ea2",
+      "name": "Create missing label",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        160,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Manual label bootstrap": {
+      "main": [
+        [
+          {
+            "node": "List existing labels",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List existing labels": {
+      "main": [
+        [
+          {
+            "node": "Select missing labels",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select missing labels": {
+      "main": [
+        [
+          {
+            "node": "Create missing label",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "55f4e232-9f7a-4ca9-8ed9-2f2c90bb03ec",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}
