@@ -1,33 +1,46 @@
 FROM python:3.10-slim AS builder
 
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1
+
 WORKDIR /app
-# Install C++ compiler required for llama-cpp-python
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc build-essential g++ wget \
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential g++ \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-# Install standard requirements plus llama-cpp-python
-RUN pip install --no-cache-dir --user -r requirements.txt llama-cpp-python
+RUN python -m venv /opt/venv \
+    && /opt/venv/bin/python -m pip install --upgrade pip setuptools wheel \
+    && /opt/venv/bin/python -m pip install -r requirements.txt
 
-# Download the quantized Phi-3 Mini model (4-bit quantization)
-RUN mkdir -p /app/models && \
-    wget -O /app/models/phi-3-mini-4k-instruct-q4.gguf \
-    "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct-gguf/resolve/main/Phi-3-mini-4k-instruct-q4.gguf"
+FROM python:3.10-slim AS runtime
 
-# --- Stage 2: Minimal Runtime ---
-FROM python:3.10-slim AS runner
+ENV PATH=/opt/venv/bin:$PATH \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=/app
 
 WORKDIR /app
-RUN groupadd -r MLOpsUser && useradd -r -g MLOpsUser MLOpsUser
 
-# Copy installed dependencies and the downloaded model
-COPY --from=builder /root/.local /home/MLOpsUser/.local
-COPY --from=builder /app/models /app/models
-COPY src/ /app/src/
+RUN groupadd --system mlops \
+    && useradd --system --gid mlops --uid 10001 --create-home mlops \
+    && mkdir -p /app/models \
+    && chown -R mlops:mlops /app
 
-ENV PATH=/home/MLOpsUser/.local/bin:$PATH
-USER MLOpsUser
+COPY --from=builder /opt/venv /opt/venv
+COPY --chown=mlops:mlops src/ /app/src/
 
+# Model weights are intentionally not downloaded at image-build time. Mount a
+# reviewed artifact at /app/models/phi-3-mini-4k-instruct-q4.gguf when enabling
+# the full diagnostic backend. This keeps the image reproducible and avoids a
+# mutable multi-GB network fetch during GHCR publication.
+VOLUME ["/app/models"]
+
+USER 10001
 EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"
+
 ENTRYPOINT ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
