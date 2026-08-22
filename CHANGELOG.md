@@ -1,66 +1,42 @@
 # Changelog
-# Changelog
-All notable changes to **PredictiveMaintenance IoT** will be documented here.
 
-This project follows **Semantic Versioning 2.0.0** and the  
-[Keep a Changelog](https://keepachangelog.com/en/1.1.0/) spec.
+All notable changes to **PredictiveMaintenance IoT** are documented here.
 
----
+The project follows Semantic Versioning and the Keep a Changelog format.
 
 ## [Unreleased]
-### Added
-- (next features go here)
 
----
+## [1.0.3] - 2026-08-22
 
-## [0.2.0] – 2025-07-03
+### Fixed
+
+- Corrected GHCR publication to use the lowercase package name `ghcr.io/coreyleath-code/predictivemaintenance-iot`.
+- Added explicit semantic-tag input for manual package-publish recovery.
+- Ensured the container package is built from the selected immutable release tag.
+
+### Changed
+
+- Externalized the Phi-3 GGUF artifact from the Docker build instead of downloading mutable multi-GB model weights from an upstream `main` URL during image publication.
+- Rebuilt the README with an evidence-first badge block, architecture and system-design Mermaid diagrams, clean-clone Quickstart, reproducibility contract, benchmark boundaries, release/package instructions, and reviewer Q&A.
+- Removed unsupported presentation of mock-path benchmark results as real Phi-3 latency, TTFT, generation-speed, memory, field-quality, or production-capacity evidence.
+- Added an L6 engineering audit covering model provenance, evaluation, safety, integration, load testing, and supply-chain gaps.
+
+## [0.2.0] - 2025-07-03
+
 ### Added
+
 - Modular C# pipeline (`DataIngest`, `FeatureEngineer`, `ModelTrainer`, `Predictor`).
-- Prometheus/OTEL instrumentation & `/metrics` endpoint.
-- Unit + integration tests, synthetic-data generator.
-- Multi-stage Dockerfile; GHCR publish & Cosign sign workflow.
-- Helm chart: values, deployment, service, chart metadata.
-- CI workflows: build-test-coverage, container scan, docker publish.
-- Governance docs (LICENSE, CONTRIBUTING, CODE_OF_CONDUCT), CHANGELOG.
-- Grafana dashboard JSON & architecture flow-chart.
-- MkDocs site config.
+- Prometheus/OTEL instrumentation and metrics support.
+- Unit/integration tests and synthetic-data tooling.
+- Container, Helm, CI/security, governance, and documentation foundations.
 
-### Changed
-- README upgraded with badges, KPIs, and Quick Start.
+## [0.1.0] - 2025-07-02
 
----
-
-## [0.1.0] – 2025-07-02
 ### Added
-- Initial console-app proof of concept.
 
-[Unreleased]: https://github.com/Trojan3877/PredictiveMaintenance_IoT/compare/v0.2.0...HEAD
-[0.2.0]: https://github.com/Trojan3877/PredictiveMaintenance_IoT/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/Trojan3877/PredictiveMaintenance_IoT/releases/tag/v0.1.0
+- Initial predictive-maintenance proof of concept.
 
-
----
-
-## [Unreleased]
-### Added
-- Modular C# pipeline: `DataIngest`, `FeatureEngineer`, `ModelTrainer`, `Predictor`.
-- Prometheus + OTEL instrumentation; `/metrics` endpoint.
-- xUnit unit tests & integration tests (Feature + Trainer).
-- Multi-stage Dockerfile (self-contained .NET 8 build).
-- Helm chart (`values.yaml`, deployment, service) + chart metadata.
-- GitHub Actions: build + coverage, container-security scan (Trivy).
-- Flow-chart architecture diagram and comprehensive README.
-- Governance files: LICENSE (MIT) & CONTRIBUTING guide.
-- Kafka interface abstraction for testability.
-
-### Changed
-- README upgraded with badges, KPIs, and quick-start instructions.
-
----
-
-## [0.1.0] – 2025-07-02
-### Added
-- Initial proof-of-concept: console app reading CSV, training ML.NET model, printing predictions.
-
-[Unreleased]: https://github.com/Trojan3877/PredictiveMaintenance_IoT/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/Trojan3877/PredictiveMaintenance_IoT/releases/tag/v0.1.0
+[Unreleased]: https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/compare/v1.0.3...HEAD
+[1.0.3]: https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/compare/v1.0.2...v1.0.3
+[0.2.0]: https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/releases/tag/v0.1.0
