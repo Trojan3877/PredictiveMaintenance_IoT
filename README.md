@@ -1,172 +1,212 @@
-#  PredictiveMaintenance-IoT: Edge-Compute Diagnostic AI
-[![CI/CD Pipeline](https://img.shields.io/badge/CI%2FCD-9--Tier_Enterprise-0078D4?style=for-the-badge&logo=githubactions)](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/actions)
-[![Coverage: 80%](https://img.shields.io/badge/Coverage-80%25-brightgreen.svg?style=for-the-badge)](https://pytest-cov.readthedocs.io/en/latest/)
-[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg?style=for-the-badge)](https://github.com/astral-sh/ruff)
-[![Checked with mypy](https://img.shields.io/badge/mypy-Strict_Typing-164165?style=for-the-badge&logo=python&logoColor=white)](https://mypy-lang.org/)
-[![Python 3.10](https://img.shields.io/badge/python-3.10-3776AB.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-Edge_Gateway-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![Docker Verified](https://img.shields.io/badge/Docker-Edge_Optimized-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com/)
-[![Multi-Agent Architecture](https://img.shields.io/badge/Agents-Neurosymbolic-E91E63?style=for-the-badge&logo=google-cloud)](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/tree/main/src/agents)
-[![Data Version Control](https://img.shields.io/badge/DVC-Artifact_Sync-13bce9?style=for-the-badge&logo=dvc&logoColor=white)](https://dvc.org/)
-[![LLM: Phi-3 Mini](https://img.shields.io/badge/LLM-Microsoft_Phi--3-892CA0?style=for-the-badge&logo=microsoft)](https://huggingface.co/microsoft/Phi-3-mini-4k-instruct-gguf)
+# PredictiveMaintenance IoT — Edge Diagnostic AI
 
+[![CI](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/actions/workflows/ci.yml)
+[![Benchmarks](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/actions/workflows/benchmarks.yml/badge.svg?branch=main)](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/actions/workflows/benchmarks.yml)
+[![Container Scan](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/actions/workflows/container-scan.yml/badge.svg?branch=main)](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/actions/workflows/container-scan.yml)
+[![GHCR Publish](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/actions/workflows/docker-publish.yml)
+[![Release](https://img.shields.io/github/v/release/CoreyLeath-code/PredictiveMaintenance_IoT)](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/releases)
+[![License](https://img.shields.io/github/license/CoreyLeath-code/PredictiveMaintenance_IoT)](LICENSE)
 
-The **PredictiveMaintenance-IoT** architecture is a multi-agent, edge-compute system designed for real-time industrial telemetry analysis. It bridges the gap between traditional machine learning anomaly detection and generative AI reasoning. By deploying a heavily optimized, quantized Large Language Model (Microsoft Phi-3 Mini) directly to edge hardware, the system not only flags mechanical failures with sub-15ms latency but also generates deterministic, human-readable mitigation strategies for maintenance technicians without requiring a cloud round-trip.
+PredictiveMaintenance IoT is a portfolio-scale predictive-maintenance repository with two related engineering surfaces: a C#/ML.NET data-and-model pipeline and a Python FastAPI diagnostic gateway that can optionally invoke a local quantized Phi-3 model through `llama-cpp-python`.
 
----
+> **Evidence boundary:** the verified Python CI path exercises API behavior, explicit mock diagnostics, safety routing, static checks, and benchmark plumbing. It does not establish real Phi-3 latency, field-level failure-detection quality, plant safety certification, or production capacity.
 
+## Engineering scope
 
-## Production Readiness Guide
+Implemented:
 
-> This section is the portfolio audit entry point for **PredictiveMaintenance_IoT**. It describes an engineering promotion path; it is not a claim that the repository is already production-authorized.
+- C# modules for ingestion, feature engineering, model training, and prediction.
+- FastAPI `/diagnose`, `/health`, and `/ready` endpoints.
+- Explicit fail-closed behavior when the diagnostic model is unavailable.
+- Opt-in `ALLOW_MOCK_DIAGNOSTICS=true` mode for local/CI tests only.
+- Local Phi-3 GGUF inference through `llama-cpp-python` when the model artifact exists.
+- Deterministic safety-agent post-processing of generated mitigation text.
+- Python tests and performance tests, container scanning, IaC/security workflows, and GHCR publication automation.
+- A non-root release container that expects model weights as an external artifact rather than downloading a mutable multi-GB file while the image is built.
 
-[![CI](https://img.shields.io/github/actions/workflow/status/CoreyLeath-code/PredictiveMaintenance_IoT/ci.yml?branch=main&label=CI)](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/actions) [![License](https://img.shields.io/github/license/CoreyLeath-code/PredictiveMaintenance_IoT)](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/blob/main/LICENSE)
+Not claimed:
 
-### Architecture flowchart
+- Safety certification or autonomous machine-control authority.
+- A validated plant dataset, calibrated failure probabilities, or representative F1/recall evidence.
+- Real Phi-3 TTFT/tokens-per-second from the CI benchmark path.
+- Production SLOs, multi-tenant isolation, or internet-facing deployment readiness.
+
+## Architecture
 
 ```mermaid
 flowchart LR
-    Source --> Build[Release binary] --> Tests[Unit + sanitizer tests] --> Artifact[Versioned artifact]
+    Telemetry["Industrial telemetry"] --> Gateway["FastAPI diagnostic gateway"]
+    Gateway --> Decision{"Anomaly flag?"}
+    Decision -->|No| Healthy["Healthy response"]
+    Decision -->|Yes| Backend{"Diagnostic backend available?"}
+    Backend -->|Model mounted| Phi3["Local Phi-3 via llama.cpp"]
+    Backend -->|Explicit CI mode| Mock["Mock diagnostic fixture"]
+    Backend -->|Unavailable| FailClosed["HTTP 503"]
+    Phi3 --> Safety["Deterministic safety agent"]
+    Safety --> Plan["Mitigation plan"]
+    Mock --> Plan
+
+    CSharp["C# ML.NET pipeline"] --> Artifacts["Training and prediction artifacts"]
 ```
 
-### Quickstart and local validation
+The current Python serving path does not call the C# ML.NET modules directly. They are separate repository components and should be treated as such until an explicit integration boundary is implemented and tested.
 
-The supported local path should be reproducible from a clean checkout. The inferred stack for this repository is **Python with a FastAPI edge gateway and optional C++/llama.cpp bindings**.
+## System design flow
 
-```bash
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build
-ctest --test-dir build --output-on-failure
+```mermaid
+flowchart TD
+    Req["POST /diagnose"] --> Parse["Validate SensorData"]
+    Parse --> Flag{"anomaly_detected"}
+    Flag -->|false| Fast["Return healthy / no mitigation"]
+    Flag -->|true| Model{"Phi-3 model loaded?"}
+    Model -->|yes| Prompt["Construct diagnostic prompt"]
+    Prompt --> Infer["Local llama.cpp inference"]
+    Infer --> Verify["Safety-agent verification / override"]
+    Verify --> Resp["Return mitigation_plan"]
+    Model -->|no| MockAllowed{"ALLOW_MOCK_DIAGNOSTICS?"}
+    MockAllowed -->|yes| Fixture["Return explicit CI/test fixture"]
+    MockAllowed -->|no| Unready["503 diagnostic backend unavailable"]
+
+    Ready["GET /ready"] --> ModelReady{"Model or explicit mock mode?"}
+    ModelReady -->|yes| Ready200["200 ready"]
+    ModelReady -->|no| Ready503["503 unready"]
 ```
 
-If the project uses external services, model artifacts, cloud credentials, or private data, start them through documented local fixtures or mocks. Never place secrets or identifiable records in the repository.
-
-### Research-style metrics and benchmarks
-
-| Evidence | Required record |
-|---|---|
-| Correctness | Test command, commit SHA, runtime, and pass/fail result |
-| Performance | Warm-up, sample count, concurrency, median, p95, p99, throughput, and memory |
-| Data/model quality | Dataset version, split strategy, leakage controls, calibration, subgroup results, and uncertainty |
-| Runtime | Image digest, health-check latency, resource limits, and rollback target |
-| Security | Dependency, secret, SAST, container, and SBOM results |
-
-A benchmark number belongs in a versioned artifact tied to a commit and hardware/runtime description. Engineering benchmarks must not be presented as clinical, financial, safety, or model-quality validation without the appropriate domain evidence.
-
-### Extended Q&A
-
-**What is production-ready for this repository?**  
-A reproducible build, tested public contract, controlled configuration, observable runtime, documented security boundary, versioned artifacts, and a tested rollback path.
-
-**What must remain explicit?**  
-The intended use, excluded use, data/credential handling, model or algorithm limitations, and which metrics are measured versus aspirational.
-
-**What should be completed next?**  
-Use the linked production-readiness issue for this repository as the checklist. Resolve missing tests, deployment instructions, observability, supply-chain controls, and release evidence before attaching a production claim.
-
-
-## Senior review follow-up: reproducibility and operating trade-offs
-
-This section closes the documentation items tracked in [issue #6](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/issues/6). The values below are the repository's existing simulated-edge benchmark results; they are engineering evidence, not a field safety certification.
-
-### Verified evidence and clean-clone path
-
-| Evidence | Current source of truth | Interpretation |
-|---|---|---|
-| Gateway throughput and p50/p99 latency | Empirical Performance Metrics above | Synthetic telemetry workload on the stated 4-core/8-GB environment |
-| Failure-detection F1 | Empirical Performance Metrics above | Synthetic failure dataset; requires a versioned, representative plant dataset before deployment |
-| Diagnostic TTFT, generation speed, and memory | Phi-3 Diagnostic Agent table above | CPU-bound quantized inference; not a machine-control deadline |
-| Static quality and tests | `ruff check .`, `pytest tests/`, and `pytest tests/performance/` | Must be rerun from the commit under review |
-| Runtime validation | `uvicorn src.api.main:app` plus the documented health/API checks | Requires the model artifact and local environment described in Quick Start |
-
-From a clean checkout, run:
+## Quickstart — verified CI/local path
 
 ```bash
 python -m venv .venv
-# Linux/macOS: source .venv/bin/activate
-# Windows: .venv\Scripts\activate
+. .venv/bin/activate
+python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-ruff check .
-pytest tests/
-pytest tests/performance/
+
+ALLOW_MOCK_DIAGNOSTICS=true pytest -q tests/
+ALLOW_MOCK_DIAGNOSTICS=true pytest -q tests/performance/
 ```
 
-The README should only promote a new benchmark after the command, commit SHA, hardware, workload, warm-up policy, and raw result artifact are recorded together. Container size, image digest, secret/dependency scan output, and coverage percentage remain release evidence to capture in CI rather than inferred from badges.
+Start the API without a model artifact in explicit test mode:
 
-### Engineering decisions and trade-offs
-
-- **Local quantized inference vs. cloud reasoning:** keeping Phi-3 on the edge avoids a cloud round trip and supports disconnected sites, but consumes roughly 2.5 GB and makes model distribution and hardware compatibility operational concerns.
-- **Fail-safe alerting vs. alert volume:** a conservative critical threshold protects recall for dangerous anomalies, while noisy sensors can increase false alarms; production rollout needs threshold calibration and technician-confirmed outcomes.
-- **Asynchronous diagnostics vs. control-loop latency:** the lightweight detector owns the fast path; the LLM is advisory and must never be the sole actuator for a safety decision.
-- **Next production step:** re-run the benchmark with a versioned representative dataset and signed model artifact, then add a hardware-in-the-loop failure-mode test before treating the reported latency or F1 as deployment evidence.
-
-
-## Diagnostic safety boundary
-
-The diagnostic service fails closed when the Phi-3 model artifact is unavailable: anomalous telemetry receives HTTP 503 and `GET /ready` is unready. The historical mock mitigation is available only when `ALLOW_MOCK_DIAGNOSTICS=true` is deliberately set for local development or CI. Do not enable that switch in a production deployment; mock text is not safety guidance.
-
-## System Architecture & Multi-Agent Flow
-
-The system operates on a dual-agent topology. A lightweight anomaly detection model serves as the primary gateway, processing continuous sensor streams. The LLM diagnostic agent is highly constrained and computationally isolated, executing only when a critical failure threshold is breached.
-
-<img width="623" height="431" alt="image" src="https://github.com/user-attachments/assets/05dbbd52-1032-421d-aab6-55640854e6d8" />
-
-## 🔬 Empirical Performance Metrics (Automated)
-
-*Performance evaluated on simulated edge hardware (4 CPU cores, 8GB RAM). LLM Inference executed via `llama.cpp` using the `microsoft/Phi-3-mini-4k-instruct-q4.gguf` quantized weights.*
-
-### Sub-System A: ML Anomaly Detection (Primary Gateway)
-| Metric | Target Threshold | Realized Performance | Std Dev (σ) | Statistical Note |
-| :--- | :--- | :--- | :--- | :--- |
-| **Throughput** | > 1000 req/sec | 1,420 req/sec | ± 45 | Evaluated over 10k continuous telemetry payloads. |
-| **P50 Latency** | < 10.0 ms | 4.2 ms | ± 0.8 ms | Nominal processing speed. |
-| **P99 Latency** | < 25.0 ms | 14.1 ms | ± 3.2 ms | Worst-case tail latency remains within safety bounds. |
-| **F1-Score** | > 0.850 | 0.894 | N/A | Balanced precision/recall on synthetic failure dataset. |
-
-### Sub-System B: Phi-3 Diagnostic Agent (Secondary Generation)
-| Metric | Target Threshold | Realized Performance | Statistical Note |
-| :--- | :--- | :--- | :--- |
-| **Time-to-First-Token (TTFT)** | < 2000 ms | ~1450 ms | Critical metric for perceived technician UI responsiveness. |
-| **Generation Speed** | > 15.0 tok/sec | 18.2 tok/sec | CPU-bound generation speed. |
-| **Peak VRAM/RAM Usage** | < 3000 MB | 2650 MB | Confirms viability for deployment on 4GB edge gateways. |
-| **Format Compliance**| 100% | 100% | Agent consistently adhered to 3-step numbered list format over 50 iterations. |
-
-🛡️ The 9-Tier Deployment Hygiene InfrastructureThis repository enforces strict deployment gates, shifting security, performance benchmarking, and architectural documentation entirely left. No code reaches the production branch without satisfying the automated "invisible hand" of the CI/CD pipeline.TierObjectiveTooling / Implementation1. Static AnalysisEnforce standard logic & stylingRuff, Mypy (Strict type hinting)2. Unit & IntegrationValidate OOP logic & API endpointsPytest (>80% Code Coverage)3. Security & SASTGuard against CVEs and leaked secretsBandit, Trivy, Gitleaks4. Artifact VersioningEnsure model weight reproducibilityDVC (Data Version Control)5. ML BenchmarkingPrevent latency regressions and model driftpytest-benchmark, Automated PR Markdown6. ContainerizationMulti-stage, minimal runtime packagingDocker, C++ bindings compiled on build7. IaC SecurityValidate infrastructure provisioningCheckov, Terraform8. Progressive RolloutEphemeral staging & traffic routingKubernetes Canary Deployments9. Automated ReleaseSync documentation with production realitySemantic Release, Auto-generated L6 Docs🧠 Edge AI: Diagnostic Agent SpecificationsStandard generative models are too large and slow for real-time edge IoT gateways. This system utilizes Microsoft Phi-3 Mini (3.8B Parameters), strictly quantized to 4-bit (.gguf format), allowing advanced reasoning to fit within a ~2.5GB memory footprint.Inference Engine: llama-cpp-python configured for multithreaded CPU execution.Deterministic Output: Temperature locked to 0.1 to prevent hallucination in critical industrial environments.Interaction Flow: Documented extensively in dialog.md.📊 System Benchmarks (Production Baseline)Metrics dynamically evaluated via Tier 5 CI pipeline prior to merge.MetricBaseline TargetRealized PerformanceStatusPrimary Inference Latency (P95)< 15.0 ms10.1 ms🟢 PassedDiagnostic LLM TTFT< 2500 ms~1800 ms🟢 PassedFailure Detection F1-Score0.8890.894🟢 PassedEdge Memory Footprint< 3000 MB2650 MB🟢 Passed🚀 Quick Start (Local Development)PrerequisitesPython 3.10+Docker DesktopC++ Build Tools (Required for llama-cpp compilation)1. Standard InstallationBash# Clone the repository
-git clone [https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT.git](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT.git)
-cd PredictiveMaintenance_IoT
-
-# Install standard dependencies and LLM bindings
-pip install -r requirements.txt
-2. Download the Quantized LLMEnsure the model directory exists and fetch the HuggingFace weights:Bashmkdir -p models
-wget -O models/phi-3-mini-4k-instruct-q4.gguf "[https://huggingface.co/microsoft/Phi-3-mini-4k-instruct-gguf/resolve/main/Phi-3-mini-4k-instruct-q4.gguf](https://huggingface.co/microsoft/Phi-3-mini-4k-instruct-gguf/resolve/main/Phi-3-mini-4k-instruct-q4.gguf)"
-3. Run the Evaluation SuiteBash# Execute Tiers 1, 2, and 5 locally
-ruff check .
-pytest tests/
-pytest tests/performance/
-4. Boot the Inference EngineBash# Launch the FastAPI edge application
+```bash
+ALLOW_MOCK_DIAGNOSTICS=true \
 uvicorn src.api.main:app --host 0.0.0.0 --port 8000
+```
 
-Here are a few extended Q&A pairs detailing the core functionality, architectural decisions, and edge-compute limitations of this repository.
+Check the runtime:
 
-1. Why use a quantized LLM (Phi-3) instead of calling an OpenAI or Groq API for diagnostics?
-A: In industrial edge-compute environments—such as oil rigs, remote manufacturing plants, or autonomous vehicles—internet connectivity is often unstable, air-gapped for security, or severely bandwidth-constrained.
+```bash
+curl --fail http://127.0.0.1:8000/health
+curl --fail http://127.0.0.1:8000/ready
+```
 
-Relying on a cloud API introduces latency that is unacceptable when dealing with critical mechanical failures (like a runaway thermal event). By utilizing a 4-bit quantized version of Microsoft's Phi-3 Mini (3.8B parameters) via llama.cpp, the system runs completely offline. It fits comfortably within a ~2.5GB memory footprint, meaning it can generate deterministic mitigation plans directly on a local gateway device (e.g., an industrial Raspberry Pi or edge server) without ever leaving the facility's internal network.
+Example diagnostic request:
 
-2. What happens to the inference latency when the LLM is triggered? Does it block the primary anomaly detection?
-A: No, it does not block the primary detection loop due to our dual-agent architectural design.
+```bash
+curl -X POST http://127.0.0.1:8000/diagnose \
+  -H 'content-type: application/json' \
+  -d '{"sensor_id":104,"temperature":92.5,"vibration":4.82,"anomaly_detected":true}'
+```
 
-The primary anomaly classifier (Tier 1 of the multi-agent flow) is a lightweight machine learning model (e.g., a Random Forest or specialized neural net) that processes high-frequency telemetry in under 15ms.
-The LLM (Phi-3) acts as a secondary diagnostic agent. It is completely bypassed during "Healthy" cycles. It only spins up its inference process when a "Critical" failure is predicted. While the LLM takes roughly 1.8 to 2.5 seconds to generate its mitigation text, this is acceptable because the mechanical system is already entering an emergency state, and the text is meant for human technicians, not millisecond-level machine control.
+## Full local-model mode
 
-3. How does the 9-Tier CI/CD pipeline ensure the AI doesn't hallucinate dangerous instructions?
-A: The "invisible hand" of our deployment hygiene pipeline enforces strict behavioral checks before the code is ever deployed to the edge.
+The application looks for:
 
-First, Tier 2 (Integration Testing) feeds predefined critical anomalies (like high vibration) into the /diagnose endpoint and asserts that the LLM's text output actually contains expected technical directives (e.g., "Immediate Shutdown") and doesn't return empty or nonsensical strings.
-Second, we enforce a strict temperature of 0.1 in our prompt engineering (documented in dialog.md), which drastically reduces the model's creative variance.
-Finally, Tier 8 (Canary Deployments) routes a small percentage of live telemetry to the new model in a secure sandbox, monitoring its Time-to-First-Token and error rates before full production rollout.
+```text
+./models/phi-3-mini-4k-instruct-q4.gguf
+```
 
-4. The test_api.py file was throwing F401 Ruff errors earlier. Why is the pipeline so strict about unused imports?
-A: In enterprise MLOps, code hygiene is a critical security and performance vector. Unused imports (like import os or import numpy) are not just "messy"; they can obscure supply chain attacks, unnecessarily bloat Docker containers, and confuse peer reviewers.
+Provide a reviewed model artifact at that path before startup. The release container intentionally does **not** download model weights during `docker build`; mount the artifact instead:
 
-By enforcing Ruff linting at Tier 1 (Static Analysis), the pipeline automatically blocks Pull Requests that contain sloppy code. It forces the developer to clean up their test files before the system spends compute resources building containers or running complex integration benchmarks. This ensures the main branch remains a pristine, portfolio-grade artifact.
-# [![CI](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/actions/workflows/ci-hygiene-security.yml/badge.svg?branch=docs%2Fportfolio-readme-production-predictivemaintenance-iot)](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/actions/workflows/ci-hygiene-security.yml) [![Benchmarks](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/actions/workflows/benchmarks.yml/badge.svg?branch=docs%2Fportfolio-readme-production-predictivemaintenance-iot)](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/actions/workflows/benchmarks.yml)
+```bash
+docker build -t predictive-maintenance-iot:local .
+docker run --rm -p 8000:8000 \
+  -v "$PWD/models:/app/models:ro" \
+  predictive-maintenance-iot:local
+```
+
+For a production-like experiment, record the exact model source, immutable revision, file SHA-256, `llama-cpp-python` version, CPU/GPU details, thread count, prompt/decoding settings, and dataset/workload provenance.
+
+## Reproducibility and benchmark contract
+
+The committed performance test at `tests/performance/test_llm_benchmark.py` deliberately forces `llm=None` and enables `ALLOW_MOCK_DIAGNOSTICS`. Therefore it measures the FastAPI/test-fixture path rather than real Phi-3 generation. Mock-path latency must not be presented as LLM TTFT or tokens-per-second evidence.
+
+Reproduce the current benchmark path:
+
+```bash
+ALLOW_MOCK_DIAGNOSTICS=true pytest tests/performance/test_llm_benchmark.py -v
+```
+
+For any published performance number, record:
+
+| Evidence | Required provenance |
+|---|---|
+| API latency | commit SHA, runner/hardware, warm-up, sample count, concurrency, p50/p95/p99 |
+| Model inference | exact GGUF SHA-256, model revision, llama.cpp version, threads/device, decoding config |
+| Failure detection | dataset/version, split strategy, leakage controls, class balance, precision/recall/F1 |
+| Safety behavior | scenario corpus, expected overrides, false-negative analysis, domain review |
+| Container | image digest, base image, vulnerability scan, model-artifact relationship |
+
+## Release and package contract
+
+The repository already has GitHub Releases. The missing package path was caused by the container publication workflow using `${{ github.repository }}` directly as the GHCR image name; this repository name contains uppercase characters, while Docker/GHCR repository names must be lowercase.
+
+The hardened workflow publishes to:
+
+```text
+ghcr.io/coreyleath-code/predictivemaintenance-iot:vX.Y.Z
+ghcr.io/coreyleath-code/predictivemaintenance-iot:latest
+```
+
+It supports both semantic tag pushes and manual recovery for an existing tag. A release tag is checked out before the image is built so the package corresponds to that immutable source state.
+
+## L6 engineering assessment
+
+Strong foundations include explicit fail-closed behavior, separate liveness/readiness semantics, opt-in mock mode, local-model execution, deterministic safety post-processing, and broad CI/security automation.
+
+Highest-value next steps:
+
+1. Pin and verify the exact GGUF artifact instead of referring to a mutable upstream `main` path.
+2. Separate runtime, test, and heavyweight LLM dependency manifests and pin release dependencies.
+3. Add a versioned representative evaluation dataset and publish real detection metrics from that artifact.
+4. Add a real-model benchmark job on disclosed hardware; keep it separate from mock API regression tests.
+5. Integrate the C# predictor and Python diagnostic gateway through an explicit versioned contract if they are intended to form one runtime system.
+6. Add authentication, rate limits, request-size bounds, audit logging/redaction, and deployment threat modeling before external exposure.
+7. Capture GHCR image digest, SBOM, model SHA-256, and signing/provenance evidence together in each release.
+
+See [L6_AUDIT.md](L6_AUDIT.md) for the detailed audit.
+
+## Reviewer Q&A
+
+**Why does `/ready` return 503 when the model is absent?**  
+Process liveness is not the same as diagnostic readiness. The service can be alive while its required diagnostic backend is unavailable.
+
+**Does the performance test benchmark Phi-3?**  
+No. It explicitly replaces the model with `None` and enables the mock diagnostic path. It is useful API regression evidence, not LLM inference evidence.
+
+**Why externalize the GGUF from the Docker image?**  
+A model artifact is large, independently versioned, and should be verified by digest. Baking a download from a mutable URL into every container build weakens reproducibility and makes GHCR publishing unnecessarily expensive and fragile.
+
+**Is the generated mitigation plan allowed to control machinery?**  
+No such authority is established by this repository. The text path should remain advisory until a safety case, validated scenario corpus, operational controls, and domain review exist.
+
+**Why is there both C# and Python?**  
+The repository contains ML.NET predictive-maintenance components and a Python edge diagnostic API. Today they are separate implementation surfaces; the README intentionally does not imply an integration that the runtime does not demonstrate.
+
+## Repository map
+
+```text
+src/DataIngest.cs                 C# ingestion
+src/FeatureEngineer.cs            C# feature engineering
+src/ModelTrainer.cs               C# ML.NET training
+src/Predictor.cs                  C# prediction
+src/api/main.py                   FastAPI diagnostic gateway
+src/agents/                       deterministic agent logic
+tests/                            Python/C# tests
+tests/performance/                mock-path performance regression tests
+Dockerfile                        non-root Python diagnostic image
+.github/workflows/docker-publish.yml
+                                  GHCR publication/signing
+```
+
+## License
+
+MIT. See [LICENSE](LICENSE).
